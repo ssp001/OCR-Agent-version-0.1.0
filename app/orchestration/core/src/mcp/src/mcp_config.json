@@ -1,0 +1,26 @@
+{
+    "mcpServers": {
+        "duck-duck-go-search": {
+            "command": "uvx",
+            "args": [
+                "duckduckgo-mcp-server"
+            ]
+        },
+        "weather_server": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@timlukahorstmann/mcp-weather"
+            ],
+            "env": {
+                "ACCUWEATHER_API_KEY": "zpka_dc537c01767c4146aa12e7f9538cdbce_f7c196a1"
+            }
+        },
+        "vector-Database": {
+            "command": "python",
+            "args": [
+                "app/backend/vector/vectordb_mcp.py"
+            ]
+        }
+    }
+}
