@@ -1,7 +1,7 @@
 # %%
 from typing import *
-from app.core.src.router.src.router import RouterAi
-from app.core.src.mcp.src.mcpagent import McpAgent
+from app.orchestration.core.src.router.src.router import RouterAi
+from app.orchestration.core.src.mcp.src.mcpagent import McpAgent
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
 

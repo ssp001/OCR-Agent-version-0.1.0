@@ -19,7 +19,7 @@
         "vector-Database": {
             "command": "python",
             "args": [
-                "app/backend/vector/vectordb_mcp.py"
+                "app/orchestration/backend/vector/vectordb_mcp.py"
             ]
         }
     }

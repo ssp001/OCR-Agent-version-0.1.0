@@ -1,12 +1,15 @@
 
-from app.orchestration.backend.vector import rag_pipeline
+import os
+import shutil
+from fastapi import UploadFile, File
 from fastapi.responses import StreamingResponse
-import asyncio
 from typing import *
 from app.orchestration.graph.src.aigraph import ocr
 from app.orchestration.core.src.router.src.router import RouterAi
 from fastapi import FastAPI
 from pydantic import BaseModel
+from app.orchestration.core.src.vector.src.vectordb import VectorDataBasePipeline
+# C:\Users\shova\Desktop\project\OCR-Agent\app\orchestration\core\src\vector\src\vectordb.py
 
 
 class user_input(BaseModel):
@@ -27,21 +30,31 @@ ai = RouterAi(model="mistralai/Mistral-7B-Instruct-v0.2",
 
 
 @server.get("/chats")
-async def stream_chat(message: str, chat_id: str):
+async def stream_chat(message: user_input):
 
-    async def event_stream():
+    result = await ocr.ainvoke({
+        "user_query": message.message,
+        "router_output": {},
+        "final_answer": None
+    })
+    return result["final_answer"]
 
-        prompt = rag_pipeline(message)
 
-        async for chunk in ocr.astream({
-            "user_query": prompt,
-            "router_output": {},
-            "final_answer": None
-        }):
-            if chunk.get("final_answer"):
-                yield chunk["final_answer"]
+@server.post("/upload-pdf")
+async def upload_pdf(file: UploadFile = File(...)):
 
-    return StreamingResponse(event_stream(), media_type="text/plain")
+    upload_dir = "uploads"
+    os.makedirs(upload_dir, exist_ok=True)  # 🔥 This fixes it
+
+    file_path = os.path.join(upload_dir, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    # Process PDF
+    VectorDataBasePipeline(file_path).connect_to_vectordb_and_store()
+
+    return {"message": "PDF uploaded and stored successfully"}
 
 
 if __name__ == "__main__":

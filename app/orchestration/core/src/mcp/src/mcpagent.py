@@ -14,11 +14,7 @@ import logging
 from dotenv import load_dotenv
 load_dotenv()
 logger = logging.getLogger(__name__)
-
-os.getenv("LANGCHAIN_API_KEY")
-os.environ["LANGCHAIN_TRACING_V2"] = "false"
-os.environ['LANGCHAIN_PROJECT'] = "OCR-Agent(v-0.1.0)"
-os.environ["LANGSMITH_WORKSPACE_ID"] = "a807d1a2-0dbd-4313-a9eb-df9199afddb1"
+logging.basicConfig(level=logging.CRITICAL)
 
 
 @traceable(name="McpAgent")
@@ -52,7 +48,7 @@ class McpAgent:
         self.chat_model = ChatHuggingFace(llm=hf_endpoint)
         print(self.chat_model)
         # Initialize LLM client server.
-        config_path = r"app\core\src\mcp\src\mcp_config.json"
+        config_path = r"app\orchestration\core\src\mcp\src\mcp_config.json"
         self.mcp_client = MCPClient.from_config_file(
             filepath=config_path)
         # lanchain client used to pull a promt from lanchian hub.this is a inbulid prompt.

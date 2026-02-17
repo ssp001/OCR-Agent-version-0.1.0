@@ -1,7 +1,13 @@
+import logging
 from dotenv import load_dotenv
 from mcp_use.server import MCPServer
 from sentence_transformers import SentenceTransformer
 import psycopg2
+import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["MCP_USE_ANONYMIZED_TELEMETRY"] = "false"
+
+logging.basicConfig(level=logging.CRITICAL)
 
 load_dotenv()
 
@@ -21,7 +27,7 @@ def search_vectors(query: str, chat_id: str, limit: int = 5):
 
     conn = psycopg2.connect(
         host="localhost",
-        port=5433,
+        port=5432,
         database="vectordb",
         user="ssp001",
         password="admin"
@@ -70,15 +76,15 @@ def store_document(content: str, chat_id: str):
 # === MCP TOOLS ===
 
 @server.tool()
-async def vector_search(query: str, chat_id: str, limit: int = 5):
+async def vector_search(query: str, limit: int = 5):
     """Search similar documents inside this chat"""
-    return search_vectors(query, chat_id, limit)
+    return search_vectors(query, limit)
 
 
 @server.tool()
-async def vector_store(content: str, chat_id: str):
+async def vector_store(content: str):
     """Store document chunk for a specific chat"""
-    return store_document(content, chat_id)
+    return store_document(content)
 
 
 # === RUN MCP SERVER ===
